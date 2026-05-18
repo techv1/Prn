@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MegaTube Smart Stream</title>
+<link rel="preconnect" href="https://crossxcel.com">
+<link rel="preconnect" href="https://www.megatube.xxx">
+<link rel="preconnect" href="https://img01.mt-static.com">
+<link rel="preconnect" href="https://cast.omg.xxx">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#09090b;--panel:#111216;--panel2:#17181d;--soft:#22242c;--text:#fff;--muted:#a1a1aa;--accent:#d946ef;--accent2:#7c3aed}
+body{background:linear-gradient(180deg,#09090b 0%,#0d0d12 100%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;background:rgba(9,9,11,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{font-size:24px;font-weight:800;cursor:pointer;letter-spacing:.02em}.logo span{color:var(--accent)}
+.search-wrap{display:flex;align-items:center;gap:10px;width:min(680px,70vw)}
+.search-box{flex:1}.search-box input{width:100%;padding:13px 15px;border:none;outline:none;border-radius:14px;background:var(--panel2);color:#fff;font-size:14px}
+.ghost-btn{padding:12px 14px;border:none;border-radius:12px;background:var(--panel2);color:#fff;cursor:pointer}
+.status-bar{max-width:1280px;margin:0 auto;padding:12px 18px;color:var(--muted);font-size:13px}
+.app-shell{max-width:1280px;margin:0 auto;padding:0 18px 28px}
+.feed-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;padding-bottom:40px}
+.sidebar{position:sticky;top:88px;background:linear-gradient(180deg,#111216 0%,#14151b 100%);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:18px}
+.sidebar h3{font-size:14px;margin-bottom:12px;color:#fff}.sidebar p,.sidebar li{font-size:13px;color:var(--muted);line-height:1.55}.sidebar ul{list-style:none;display:grid;gap:10px}
+.video-card{display:flex;flex-direction:column;gap:12px;cursor:pointer}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#101114;border:1px solid rgba(255,255,255,.05);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.thumb img,.thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.thumb img{transition:transform .35s ease,opacity .25s ease}.video-card:hover .thumb img{transform:scale(1.04)}
+.thumb::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.7));pointer-events:none}
+.duration,.quality-badge,.score-badge,.hero-badge{position:absolute;z-index:3;font-size:12px;padding:5px 8px;border-radius:999px;background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
+.duration{right:10px;bottom:10px}.quality-badge{left:10px;top:10px}.score-badge{right:10px;top:10px;background:rgba(217,70,239,.85)}.hero-badge{left:12px;bottom:12px;background:rgba(217,70,239,.85)}
+.card-meta{display:grid;gap:6px}.title{font-size:16px;line-height:1.4;font-weight:700}.sub{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.loading,.empty-state{padding:46px 18px;text-align:center;color:var(--muted)}
+.player-page{display:none;gap:24px}
+.player-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px}
+.player-main{min-width:0}.player-side{display:grid;gap:16px;align-content:start}
+.back-btn{margin-bottom:14px;background:var(--panel2);border:none;color:#fff;padding:12px 18px;border-radius:12px;cursor:pointer}
+.player-box{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.player-box video{width:100%;height:100%;background:#000}.player-overlay{position:absolute;left:16px;bottom:16px;display:flex;gap:8px;flex-wrap:wrap;z-index:3}.pill{font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}
+.player-title{font-size:28px;line-height:1.25;margin-top:16px}.player-meta{color:var(--muted);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;font-size:14px}.player-desc{margin-top:14px;color:#d4d4d8;line-height:1.65;font-size:14px;max-width:90ch}.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.tag{padding:7px 10px;border-radius:999px;background:#17181d;color:#c4c4cc;font-size:12px;border:1px solid rgba(255,255,255,.06)}
+.panel{background:linear-gradient(180deg,#111216 0%,#161821 100%);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px}.panel h3{font-size:14px;margin-bottom:12px}.log-box{max-height:220px;overflow:auto;font-size:12px;color:#b8b8c2;display:grid;gap:8px}.recommendations{display:grid;gap:14px}.mini-card{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;cursor:pointer}.mini-thumb{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0f1014}.mini-thumb img{width:100%;height:100%;object-fit:cover}.mini-title{font-size:14px;line-height:1.35;font-weight:700}.mini-sub{font-size:12px;color:var(--muted);margin-top:6px}.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#161821;border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,.05)}.stat .k{font-size:11px;color:var(--muted)}.stat .v{font-size:18px;font-weight:800;margin-top:8px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:20px;margin-bottom:24px}.hero-card,.hero-stack-card{position:relative;overflow:hidden;border-radius:22px;min-height:220px;background:linear-gradient(180deg,#12131a 0%,#0b0c10 100%);border:1px solid rgba(255,255,255,.06);cursor:pointer}.hero-card img,.hero-stack-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.48}.hero-card::after,.hero-stack-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,6,8,.14),rgba(6,6,8,.9))}.hero-body{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:24px}.hero-kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#d4d4d8;margin-bottom:10px}.hero-title{font-size:clamp(24px,3vw,38px);line-height:1.1;font-weight:800;max-width:12ch}.hero-sub{margin-top:10px;color:#d4d4d8;font-size:14px;max-width:58ch;line-height:1.55}.hero-stack{display:grid;gap:20px}.sidebar-note{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--muted)}
+@media (max-width:1024px){.feed-layout,.player-grid,.hero-grid{grid-template-columns:1fr}.sidebar,.player-side{position:static}.feed{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+@media (max-width:720px){header{flex-wrap:wrap;padding:14px}.search-wrap{width:100%}.feed{grid-template-columns:1fr}.player-title{font-size:22px}.mini-card{grid-template-columns:120px minmax(0,1fr)}.hero-body{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="goHome()">Mega<span>Tube</span></div>
+  <div class="search-wrap">
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Search title, performer, studio, tags..."></div>
+    <button class="ghost-btn" id="refreshBtn">Refresh</button>
+  </div>
+</header>
+<div class="status-bar" id="statusBar">Connecting to cache-aware worker...</div>
+<div class="app-shell">
+  <section id="feedView" class="feed-layout">
+    <main>
+      <div id="heroZone"></div>
+      <div class="feed" id="feed"></div>
+    </main>
+    <aside class="sidebar">
+      <h3>Smart ranking</h3>
+      <ul>
+        <li>Home refresh reshuffles featured picks so the landing page feels fresh on every reload.</li>
+        <li>Catalog bootstraps from paginated Worker calls until all available records are loaded.</li>
+        <li>Route hashes keep direct video links and back navigation working without breaking home state.</li>
+      </ul>
+      <div class="sidebar-note" id="catalogInfo">Catalog not loaded yet.</div>
+    </aside>
+  </section>
+  <section id="playerPage" class="player-page">
+    <button class="back-btn" onclick="goHome()">← Back</button>
+    <div class="player-grid">
+      <div class="player-main">
+        <div class="player-box">
+          <video id="mainPlayer" controls playsinline preload="metadata" disableremoteplayback x-webkit-airplay="deny"></video>
+          <div class="player-overlay">
+            <span class="pill" id="cachePill">resolver cache pending</span>
+            <span class="pill" id="thumbPill">thumbnail pending</span>
+          </div>
+        </div>
+        <h1 class="player-title" id="playerTitle"></h1>
+        <div class="player-meta" id="playerMeta"></div>
+        <div class="player-desc" id="playerDesc"></div>
+        <div class="tag-row" id="tagRow"></div>
+      </div>
+      <div class="player-side">
+        <div class="panel">
+          <h3>Session stats</h3>
+          <div class="stats-row">
+            <div class="stat"><div class="k">Loaded</div><div class="v" id="statLoaded">0</div></div>
+            <div class="stat"><div class="k">Cached</div><div class="v" id="statCached">0</div></div>
+            <div class="stat"><div class="k">Played</div><div class="v" id="statPlayed">0</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Resolver log</h3>
+          <div class="log-box" id="logBox"></div>
+        </div>
+        <div class="panel">
+          <h3>Up next</h3>
+          <div class="recommendations" id="recommendations"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+const CF_WORKER = 'https://crossxcel.com/';
+const PAGE_SIZE = 120;
+const RECOMMENDATION_SEED = Date.now();
+const feed = document.getElementById('feed');
+const heroZone = document.getElementById('heroZone');
+const feedView = document.getElementById('feedView');
+const playerPage = document.getElementById('playerPage');
+const mainPlayer = document.getElementById('mainPlayer');
+const playerTitle = document.getElementById('playerTitle');
+const playerMeta = document.getElementById('playerMeta');
+const playerDesc = document.getElementById('playerDesc');
+const tagRow = document.getElementById('tagRow');
+const logBox = document.getElementById('logBox');
+const statusBar = document.getElementById('statusBar');
+const cachePill = document.getElementById('cachePill');
+const thumbPill = document.getElementById('thumbPill');
+const statLoaded = document.getElementById('statLoaded');
+const statCached = document.getElementById('statCached');
+const statPlayed = document.getElementById('statPlayed');
+const catalogInfo = document.getElementById('catalogInfo');
+const searchInput = document.getElementById('searchInput');
+
+let videos = [];
+let filteredVideos = [];
+let videosById = new Map();
+let mp4Cache = new Map();
+let historyStack = [];
+let query = '';
+let stats = { loaded: 0, cached: 0, played: 0 };
+let dataReady = false;
+let lastHomePicks = [];
+
+function addLog(message){
+  const div = document.createElement('div');
+  div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  logBox.prepend(div);
+}
+
+function updateStats(){
+  statLoaded.textContent = stats.loaded;
+  statCached.textContent = stats.cached;
+  statPlayed.textContent = stats.played;
+}
+
+function escapeHtml(v){
+  return String(v ?? '').replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function tokenize(text){
+  return String(text || '').toLowerCase().replace(/[^a-z0-9\s]+/g,' ').split(/\s+/).filter(w => w.length > 2);
+}
+
+function buildThumbs(id){
+  const num = Number(id);
+  const highBase = Math.floor(num / 1000) * 1000;
+  return {
+    high: `https://www.megatube.xxx/contents/videos_sources/${highBase}/${id}/screenshots/8.jpg`,
+    low: `https://img01.mt-static.com/vth/${highBase}/${id}/400x225/7.jpg`
+  };
+}
+
+function normalizeRow(row){
+  const id = String(row.id);
+  const thumbs = buildThumbs(id);
+  return {
+    id,
+    title: row.title || 'Untitled',
+    performer: row.performer_group || row.performer || 'Unknown',
+    performerRaw: row.performer || '',
+    studio: row.studio || 'Unknown studio',
+    duration: row.original_duration || 'Unknown',
+    description: row.description || '',
+    pageUrl: row.url || '',
+    tags: String(row.tags || '').split(',').map(v => v.trim()).filter(Boolean),
+    categories: String(row.categories || '').split(',').map(v => v.trim()).filter(Boolean),
+    titleTokens: tokenize(row.title),
+    performerTokens: tokenize((row.performer_group || '') + ' ' + (row.performer || '')),
+    studioTokens: tokenize(row.studio),
+    tagTokens: tokenize(String(row.tags || '') + ' ' + String(row.categories || '')),
+    thumbnails: thumbs,
+    preview: `https://cast.omg.xxx/preview/${id}.mp4`
+  };
+}
+
+function seededShuffle(list, seed){
+  const arr = [...list];
+  let state = seed % 2147483647;
+  if(state <= 0) state += 2147483646;
+  const rand = () => (state = state * 16807 % 2147483647) / 2147483647;
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(rand() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+async function fetchVideosPage(search = '', offset = 0, limit = PAGE_SIZE){
+  const url = new URL('api/videos', CF_WORKER);
+  url.searchParams.set('limit', String(limit));
+  url.searchParams.set('offset', String(offset));
+  if(search.trim()) url.searchParams.set('q', search.trim());
+  const res = await fetch(url.toString(), { cache: 'no-store' });
+  const data = await res.json();
+  if(!data.success) throw new Error(data.error || 'Failed to load');
+  return data.results || [];
+}
+
+async function fetchAllVideos(search = ''){
+  const all = [];
+  const seen = new Set();
+  let offset = 0;
+  while(true){
+    const page = await fetchVideosPage(search, offset, PAGE_SIZE);
+    page.forEach(row => {
+      if(!seen.has(String(row.id))){
+        seen.add(String(row.id));
+        all.push(row);
+      }
+    });
+    if(page.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  return all.map(normalizeRow);
+}
+
+function attachThumbnailBehavior(img, video){
+  img.src = video.thumbnails.high;
+  img.dataset.quality = 'HQ';
+  img.onerror = () => {
+    if(img.dataset.fallbackDone) return;
+    img.dataset.fallbackDone = '1';
+    img.src = video.thumbnails.low;
+    img.dataset.quality = 'LQ';
+  };
+}
+
+function startPreview(thumb, video){
+  if(window.matchMedia('(hover: none)').matches) return;
+  const preview = document.createElement('video');
+  preview.src = video.preview;
+  preview.muted = true;
+  preview.loop = true;
+  preview.autoplay = true;
+  preview.playsInline = true;
+  preview.preload = 'none';
+  preview.className = 'hover-preview';
+  thumb.appendChild(preview);
+  thumb._preview = preview;
+}
+
+function stopPreview(thumb){
+  if(thumb._preview){
+    thumb._preview.pause();
+    thumb._preview.remove();
+    thumb._preview = null;
+  }
+}
+
+function renderHero(list){
+  heroZone.innerHTML = '';
+  if(query || !list.length) return;
+  const picks = list.slice(0, 3);
+  if(!picks.length) return;
+  lastHomePicks = picks;
+  const [lead, sideA, sideB] = picks;
+  const shell = document.createElement('section');
+  shell.className = 'hero-grid';
+  shell.innerHTML = `
+    <article class="hero-card" data-id="${escapeHtml(lead.id)}">
+      <img alt="${escapeHtml(lead.title)}" loading="eager" width="1280" height="720">
+      <div class="hero-body">
+        <span class="hero-badge">Fresh pick</span>
+        <div class="hero-kicker">Homepage recommendation engine</div>
+        <div class="hero-title">${escapeHtml(lead.title)}</div>
+        <div class="hero-sub">${escapeHtml(lead.performer)} · ${escapeHtml(lead.studio)} · ${escapeHtml(lead.duration)}</div>
+      </div>
+    </article>
+    <div class="hero-stack">
+      ${sideA ? `
+      <article class="hero-stack-card" data-id="${escapeHtml(sideA.id)}">
+        <img alt="${escapeHtml(sideA.title)}" loading="lazy" width="1280" height="720">
+        <div class="hero-body">
+          <div class="hero-kicker">Trending next</div>
+          <div class="hero-title">${escapeHtml(sideA.title)}</div>
+          <div class="hero-sub">${escapeHtml(sideA.performer)} · ${escapeHtml(sideA.studio)}</div>
+        </div>
+      </article>` : ''}
+      ${sideB ? `
+      <article class="hero-stack-card" data-id="${escapeHtml(sideB.id)}">
+        <img alt="${escapeHtml(sideB.title)}" loading="lazy" width="1280" height="720">
+        <div class="hero-body">
+          <div class="hero-kicker">Rotate on refresh</div>
+          <div class="hero-title">${escapeHtml(sideB.title)}</div>
+          <div class="hero-sub">${escapeHtml(sideB.performer)} · ${escapeHtml(sideB.duration)}</div>
+        </div>
+      </article>` : ''}
+    </div>`;
+  heroZone.appendChild(shell);
+  shell.querySelectorAll('article').forEach(card => {
+    const video = videosById.get(card.dataset.id);
+    const img = card.querySelector('img');
+    attachThumbnailBehavior(img, video);
+    card.addEventListener('click', () => navigateToVideo(video.id));
+  });
+}
+
+function renderFeed(list){
+  feed.innerHTML = '';
+  renderHero(list);
+  if(!list.length){
+    feed.innerHTML = '<div class="empty-state">No videos matched this query.</div>';
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  list.forEach(video => {
+    const card = document.createElement('article');
+    card.className = 'video-card';
+    card.innerHTML = `
+      <div class="thumb">
+        <img alt="${escapeHtml(video.title)}" loading="lazy" decoding="async" width="400" height="225">
+        <span class="quality-badge">thumb</span>
+        <span class="duration">${escapeHtml(video.duration)}</span>
+      </div>
+      <div class="card-meta">
+        <div class="title">${escapeHtml(video.title)}</div>
+        <div class="sub">
+          <span>${escapeHtml(video.performer)}</span>
+          <span>•</span>
+          <span>${escapeHtml(video.studio)}</span>
+        </div>
+      </div>`;
+    const img = card.querySelector('img');
+    const qualityBadge = card.querySelector('.quality-badge');
+    attachThumbnailBehavior(img, video);
+    img.addEventListener('load', () => { qualityBadge.textContent = img.dataset.quality || 'IMG'; });
+    const thumb = card.querySelector('.thumb');
+    thumb.addEventListener('mouseenter', () => startPreview(thumb, video));
+    thumb.addEventListener('mouseleave', () => stopPreview(thumb));
+    card.onclick = () => navigateToVideo(video.id);
+    fragment.appendChild(card);
+  });
+  feed.appendChild(fragment);
+}
+
+function similarityScore(current, candidate){
+  if(current.id === candidate.id) return -1;
+  let score = 0;
+  if(current.performer && candidate.performer && current.performer.toLowerCase() === candidate.performer.toLowerCase()) score += 90;
+  if(current.studio && candidate.studio && current.studio.toLowerCase() === candidate.studio.toLowerCase()) score += 45;
+  const tagMatches = candidate.tagTokens.filter(t => current.tagTokens.includes(t)).length;
+  const titleMatches = candidate.titleTokens.filter(t => current.titleTokens.includes(t)).length;
+  const performerMatches = candidate.performerTokens.filter(t => current.performerTokens.includes(t)).length;
+  score += tagMatches * 14;
+  score += titleMatches * 10;
+  score += performerMatches * 18;
+  if(historyStack.some(v => v.performer === candidate.performer)) score += 8;
+  if(historyStack.some(v => v.studio === candidate.studio)) score += 5;
+  score += Math.max(0, 6 - Math.min(Math.abs(Number(current.id) - Number(candidate.id)) / 1000, 6));
+  return score;
+}
+
+function buildRecommendations(current){
+  const recommendations = document.getElementById('recommendations');
+  recommendations.innerHTML = '';
+  const ranked = videos
+    .map(v => ({ video: v, score: similarityScore(current, v) }))
+    .filter(x => x.score >= 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 12);
+
+  if(!ranked.length){
+    recommendations.innerHTML = '<div class="empty-state">No recommendations available.</div>';
+    return;
+  }
+
+  ranked.forEach(({ video, score }) => {
+    const card = document.createElement('div');
+    card.className = 'mini-card';
+    card.innerHTML = `
+      <div class="mini-thumb">
+        <img alt="${escapeHtml(video.title)}" loading="lazy" width="400" height="225">
+        <span class="score-badge">${Math.round(score)}</span>
+      </div>
+      <div>
+        <div class="mini-title">${escapeHtml(video.title)}</div>
+        <div class="mini-sub">${escapeHtml(video.performer)} · ${escapeHtml(video.studio)}</div>
+        <div class="mini-sub">${escapeHtml(video.duration)}</div>
+      </div>`;
+    const img = card.querySelector('img');
+    attachThumbnailBehavior(img, video);
+    card.onclick = () => navigateToVideo(video.id);
+    recommendations.appendChild(card);
+  });
+
+  prefetchTopRecommendations(ranked.slice(0, 3).map(x => x.video));
+}
+
+async function resolvePlayback(video){
+  if(mp4Cache.has(video.id)){
+    stats.cached += 1;
+    updateStats();
+    cachePill.textContent = 'memory cache hit';
+    return mp4Cache.get(video.id);
+  }
+
+  const api = `${CF_WORKER}?url=${encodeURIComponent(video.pageUrl)}`;
+  const res = await fetch(api, { cache: 'force-cache' });
+  const data = await res.json();
+  if(!data.success) throw new Error(data.error || 'Resolver failed');
+  const playback = String(data.video || '').replace(/&amp;/g, '&');
+  const xCache = res.headers.get('x-cache') || (data.cached ? 'HIT' : 'MISS');
+  cachePill.textContent = `resolver ${xCache.toLowerCase()}`;
+  if(data.cached) stats.cached += 1;
+  mp4Cache.set(video.id, playback);
+  updateStats();
+  return playback;
+}
+
+async function openPlayer(video){
+  feedView.style.display = 'none';
+  playerPage.style.display = 'grid';
+  playerTitle.textContent = video.title;
+  playerMeta.innerHTML = `<span>${escapeHtml(video.performer)}</span><span>•</span><span>${escapeHtml(video.studio)}</span><span>•</span><span>${escapeHtml(video.duration)}</span>`;
+  playerDesc.textContent = video.description || 'No description available.';
+  thumbPill.textContent = 'thumbnail hq→fallback';
+  tagRow.innerHTML = [...video.tags.slice(0,8), ...video.categories.slice(0,4)].slice(0,10).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+  addLog(`Opening ${video.id}`);
+
+  if(!historyStack.length || historyStack[historyStack.length - 1].id !== video.id) historyStack.push(video);
+  stats.played += 1;
+  updateStats();
+
+  try{
+    const playback = await resolvePlayback(video);
+    mainPlayer.pause();
+    mainPlayer.removeAttribute('src');
+    mainPlayer.load();
+    mainPlayer.src = playback;
+    mainPlayer.preload = 'auto';
+    mainPlayer.load();
+    addLog('Playback URL ready');
+    const p = mainPlayer.play();
+    if(p) p.then(() => addLog('Playback started')).catch(err => addLog(String(err)));
+  }catch(err){
+    addLog(`Player error: ${err.message}`);
+  }
+
+  buildRecommendations(video);
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function prefetchTopRecommendations(list){
+  list.forEach(video => {
+    if(mp4Cache.has(video.id)) return;
+    const href = `${CF_WORKER}?url=${encodeURIComponent(video.pageUrl)}`;
+    if(document.head.querySelector(`link[rel="prefetch"][href="${CSS.escape(href)}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.as = 'fetch';
+    link.href = href;
+    document.head.appendChild(link);
+  });
+}
+
+function renderHome(){
+  feedView.style.display = 'grid';
+  playerPage.style.display = 'none';
+  mainPlayer.pause();
+  mainPlayer.src = '';
+  mainPlayer.load();
+  const base = query ? filteredVideos : seededShuffle(filteredVideos, RECOMMENDATION_SEED);
+  renderFeed(base);
+  const label = query ? `${filteredVideos.length} videos matched “${query}”` : `${filteredVideos.length} videos loaded · homepage refreshed with new picks`;
+  statusBar.textContent = `${label} · route-aware catalog · worker-backed SQL search`;
+}
+
+function navigateToVideo(id){
+  location.hash = `#/video/${encodeURIComponent(id)}`;
+}
+
+function goHome(){
+  if(query){
+    location.hash = `#/search/${encodeURIComponent(query)}`;
+    return;
+  }
+  location.hash = '#/';
+}
+
+function applyFilter(){
+  const q = query.trim().toLowerCase();
+  if(!q){
+    filteredVideos = [...videos];
+  }else{
+    filteredVideos = videos.filter(video => {
+      const hay = [video.title, video.performer, video.performerRaw, video.studio, video.description, video.tags.join(' '), video.categories.join(' ')].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+}
+
+function applyRoute(){
+  if(!dataReady) return;
+  const hash = location.hash || '#/';
+  const videoMatch = hash.match(/^#\/video\/([^/?#]+)/);
+  const searchMatch = hash.match(/^#\/search\/([^/?#]*)/);
+
+  if(videoMatch){
+    const id = decodeURIComponent(videoMatch[1]);
+    const video = videosById.get(id);
+    if(video){
+      openPlayer(video);
+      return;
+    }
+    statusBar.textContent = `Video ${id} not found in catalog.`;
+    location.hash = '#/';
+    return;
+  }
+
+  if(searchMatch){
+    query = decodeURIComponent(searchMatch[1] || '').trim();
+    searchInput.value = query;
+    applyFilter();
+    renderHome();
+    return;
+  }
+
+  query = '';
+  searchInput.value = '';
+  applyFilter();
+  renderHome();
+}
+
+async function bootstrapCatalog(){
+  statusBar.textContent = 'Loading full catalog from paginated Worker API...';
+  const rows = await fetchAllVideos('');
+  videos = rows;
+  filteredVideos = [...videos];
+  videosById = new Map(videos.map(video => [video.id, video]));
+  stats.loaded = videos.length;
+  updateStats();
+  catalogInfo.textContent = `Full catalog in memory: ${videos.length} videos. Homepage rotates picks every refresh.`;
+  dataReady = true;
+  applyRoute();
+}
+
+let searchTimer;
+searchInput.addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    query = e.target.value.trim();
+    if(query){
+      location.hash = `#/search/${encodeURIComponent(query)}`;
+    }else{
+      location.hash = '#/';
+    }
+  }, 250);
+});
+
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  if(location.hash.startsWith('#/video/')){
+    goHome();
+    return;
+  }
+  location.hash = query ? `#/search/${encodeURIComponent(query)}` : '#/';
+  applyRoute();
+});
+
+window.addEventListener('hashchange', applyRoute);
+
+bootstrapCatalog().catch(err => {
+  statusBar.textContent = 'Failed to load full catalog.';
+  addLog(String(err));
+});
+</script>
+</body>
+</html>
