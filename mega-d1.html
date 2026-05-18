@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MegaTube SQL Stream</title>
+<link rel="preconnect" href="https://img.omg.xxx">
+<link rel="preconnect" href="https://cast.omg.xxx">
+<link rel="dns-prefetch" href="//crossxcel.com">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#09090b;color:#fff}
+header{position:sticky;top:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;background:#09090bee;backdrop-filter:blur(12px);border-bottom:1px solid #222}
+.logo{font-size:24px;font-weight:bold;cursor:pointer}.logo span{color:#d946ef}
+.search-box{width:420px;max-width:60%}.search-box input{width:100%;padding:12px 14px;border:none;outline:none;border-radius:12px;background:#18181b;color:white}
+.feed{width:100%;max-width:720px;margin:auto;display:grid;grid-template-columns:1fr;gap:32px;padding:24px 14px}.video-card{display:flex;flex-direction:column;gap:12px;cursor:pointer}.thumbnail{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:14px;background:#111}.thumbnail img,.thumbnail video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.thumbnail img{transition:transform .3s ease}.video-card:hover img{transform:scale(1.03)}.duration{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.8);padding:4px 8px;border-radius:6px;font-size:12px;z-index:5}.title{font-size:18px;line-height:1.5}.performer{color:#aaa;font-size:14px}.player-page{display:none;width:100%;max-width:1200px;margin:auto;padding:20px}.player-box{position:relative;width:100%;aspect-ratio:16/9;background:black;border-radius:16px;overflow:hidden}.player-box video{width:100%;height:100%;background:black}.player-title{font-size:28px;margin-top:20px}.player-performer{color:#aaa;margin-top:8px;margin-bottom:8px}.player-meta{color:#888;margin-bottom:20px;font-size:14px}.player-desc{line-height:1.6;color:#ddd;margin-bottom:20px;max-width:90ch}.back-btn{margin-bottom:20px;background:#18181b;border:none;color:white;padding:12px 18px;border-radius:10px;cursor:pointer}.recommendations{margin-top:50px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}.loading{padding:40px;text-align:center;color:#aaa}.log-box{margin-top:20px;background:#111;border:1px solid #333;border-radius:12px;padding:15px;max-height:220px;overflow:auto;font-size:12px;color:#bbb}.log-box div{margin-bottom:8px;word-break:break-word}.status-bar{max-width:720px;margin:0 auto;padding:12px 14px;color:#aaa;font-size:14px}.empty{padding:32px;background:#111;border:1px solid #222;border-radius:14px;text-align:center;color:#999}@media (max-width:720px){header{padding:14px;flex-wrap:wrap}.search-box{max-width:100%;width:100%}.player-title{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="goHome()">Mega<span>Tube</span></div>
+  <div class="search-box"><input type="text" id="searchInput" placeholder="Search title, performer, studio..."></div>
+</header>
+<div id="loading" class="loading">Loading from SQL database...</div>
+<div id="statusBar" class="status-bar"></div>
+<main class="feed" id="feed"></main>
+<main class="player-page" id="playerPage">
+  <button class="back-btn" onclick="goHome()">← Back</button>
+  <div class="player-box"><video id="mainPlayer" controls playsinline preload="metadata" disableremoteplayback x-webkit-airplay="deny"></video></div>
+  <h1 class="player-title" id="playerTitle"></h1>
+  <div class="player-performer" id="playerPerformer"></div>
+  <div class="player-meta" id="playerMeta"></div>
+  <div class="player-desc" id="playerDesc"></div>
+  <div class="log-box" id="logBox"></div>
+  <div class="recommendations" id="recommendations"></div>
+</main>
+<script>
+const CF_WORKER = "https://crossxcel.com/";
+const D1_API = `${CF_WORKER}api/videos`;
+const feed = document.getElementById("feed");
+const playerPage = document.getElementById("playerPage");
+const mainPlayer = document.getElementById("mainPlayer");
+const playerTitle = document.getElementById("playerTitle");
+const playerPerformer = document.getElementById("playerPerformer");
+const playerMeta = document.getElementById("playerMeta");
+const playerDesc = document.getElementById("playerDesc");
+const loading = document.getElementById("loading");
+const statusBar = document.getElementById("statusBar");
+const logBox = document.getElementById("logBox");
+let processedVideos = [];
+let mp4Cache = new Map();
+let activeQuery = "";
+
+function addLog(message){
+  const div = document.createElement("div");
+  div.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+  logBox.prepend(div);
+  console.log(message);
+}
+
+function escapeHtml(v){
+  return String(v ?? "").replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function normalizeRow(video){
+  const id = String(video.id);
+  const folder = Math.floor(Number(id)/1000)*1000;
+  return {
+    id,
+    performer: video.performer_group || video.performer || "Unknown",
+    title: video.title || "Untitled",
+    duration: video.original_duration || "Unknown",
+    pageUrl: video.url || "",
+    studio: video.studio || "Unknown studio",
+    description: video.description || "",
+    originalTitle: video.original_title || "",
+    tags: video.tags || "",
+    categories: video.categories || "",
+    thumbnail: `https://img.omg.xxx/${folder}/${id}/medium@2x/1.jpg`,
+    preview: `https://cast.omg.xxx/preview/${id}.mp4`
+  };
+}
+
+async function apiFetch(params = {}){
+  const url = new URL(D1_API, window.location.href);
+  Object.entries(params).forEach(([k, v]) => {
+    if(v !== undefined && v !== null && v !== "") url.searchParams.set(k, v);
+  });
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error(`API ${res.status}`);
+  return await res.json();
+}
+
+async function loadDatabase(query = ""){
+  try{
+    activeQuery = query.trim();
+    loading.style.display = "block";
+    loading.innerText = activeQuery ? `Searching SQL for "${activeQuery}"...` : "Loading from SQL database...";
+    addLog(activeQuery ? `Searching D1: ${activeQuery}` : "Fetching latest videos from D1...");
+    const data = await apiFetch({ q: activeQuery, limit: 120 });
+    const rows = Array.isArray(data.results) ? data.results : [];
+    processedVideos = rows.map(normalizeRow);
+    renderFeed(processedVideos);
+    loading.style.display = "none";
+    statusBar.textContent = `${processedVideos.length} result${processedVideos.length === 1 ? '' : 's'}${activeQuery ? ` for “${activeQuery}”` : ' from D1'}`;
+    addLog(`Loaded ${processedVideos.length} row(s) from SQL`);
+  }catch(err){
+    loading.style.display = "block";
+    loading.innerText = "Failed to load SQL data.";
+    statusBar.textContent = "Check your Worker D1 API route.";
+    addLog(err.toString());
+  }
+}
+
+function renderFeed(videos){
+  feed.innerHTML = "";
+  if(!videos.length){
+    feed.innerHTML = '<div class="empty">No videos matched your query.</div>';
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  videos.forEach(video => {
+    const card = document.createElement("div");
+    card.className = "video-card";
+    card.innerHTML = `
+      <div class="thumbnail">
+        <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" loading="lazy" decoding="async" width="1280" height="720">
+        <span class="duration">${escapeHtml(video.duration)}</span>
+      </div>
+      <div>
+        <div class="title">${escapeHtml(video.title)}</div>
+        <div class="performer">${escapeHtml(video.performer)} · ${escapeHtml(video.studio)}</div>
+      </div>`;
+    const thumb = card.querySelector(".thumbnail");
+    let hoverVideo;
+    thumb.addEventListener("mouseenter", () => {
+      hoverVideo = document.createElement("video");
+      hoverVideo.src = video.preview;
+      hoverVideo.muted = true;
+      hoverVideo.loop = true;
+      hoverVideo.autoplay = true;
+      hoverVideo.playsInline = true;
+      thumb.appendChild(hoverVideo);
+    });
+    thumb.addEventListener("mouseleave", () => {
+      if(hoverVideo){ hoverVideo.pause(); hoverVideo.remove(); }
+    });
+    card.onclick = () => openPlayer(video);
+    fragment.appendChild(card);
+  });
+  feed.appendChild(fragment);
+}
+
+async function openPlayer(video){
+  feed.style.display = "none";
+  playerPage.style.display = "block";
+  playerTitle.innerText = video.title;
+  playerPerformer.innerText = video.performer;
+  playerMeta.innerText = `${video.studio} · ${video.duration}`;
+  playerDesc.innerText = video.description || "No description available.";
+  addLog(`Opening ${video.id} from SQL-backed feed`);
+  let mp4Url;
+  if(mp4Cache.has(video.id)){
+    mp4Url = mp4Cache.get(video.id);
+    addLog("MP4 cache hit");
+  }else{
+    addLog("Resolving playback URL...");
+    const api = `${CF_WORKER}?url=${encodeURIComponent(video.pageUrl)}`;
+    const response = await fetch(api, { cache: "force-cache" });
+    const data = await response.json();
+    if(!data.success){
+      addLog(`Worker Error: ${data.error}`);
+      return;
+    }
+    mp4Url = String(data.video || "").replace(/&amp;/g, "&");
+    mp4Cache.set(video.id, mp4Url);
+  }
+  mainPlayer.pause();
+  mainPlayer.removeAttribute("src");
+  mainPlayer.load();
+  mainPlayer.src = mp4Url;
+  mainPlayer.preload = "auto";
+  mainPlayer.load();
+  const playPromise = mainPlayer.play();
+  if(playPromise){
+    playPromise.then(() => addLog("Playback started")).catch(err => addLog(err.toString()));
+  }
+  preloadNextVideos(video);
+  buildRecommendations(video);
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+function preloadNextVideos(current){
+  processedVideos.filter(v => v.id !== current.id).slice(0,3).forEach(video => {
+    if(mp4Cache.has(video.id)){
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "video";
+      link.href = mp4Cache.get(video.id);
+      document.head.appendChild(link);
+    }
+  });
+}
+
+function buildRecommendations(current){
+  const recommendations = document.getElementById("recommendations");
+  recommendations.innerHTML = "";
+  const related = processedVideos.filter(v => v.id !== current.id && (v.performer === current.performer || v.studio === current.studio)).slice(0,12);
+  const fallback = processedVideos.filter(v => v.id !== current.id).slice(0,12);
+  (related.length ? related : fallback).forEach(video => {
+    const card = document.createElement("div");
+    card.className = "video-card";
+    card.innerHTML = `
+      <div class="thumbnail">
+        <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" loading="lazy" width="1280" height="720">
+        <span class="duration">${escapeHtml(video.duration)}</span>
+      </div>
+      <div>
+        <div class="title">${escapeHtml(video.title)}</div>
+        <div class="performer">${escapeHtml(video.performer)}</div>
+      </div>`;
+    card.onclick = () => openPlayer(video);
+    recommendations.appendChild(card);
+  });
+}
+
+function goHome(){
+  playerPage.style.display = "none";
+  feed.style.display = "grid";
+  mainPlayer.pause();
+  mainPlayer.src = "";
+  mainPlayer.load();
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+let searchTimer;
+document.getElementById("searchInput").addEventListener("input", e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadDatabase(e.target.value), 250);
+});
+
+loadDatabase();
+</script>
+</body>
+</html>
