@@ -1,0 +1,639 @@
+{
+  "metadata": {
+    "version": "v2.0",
+    "generated_at": "2026-05-16T09:31:23.900488",
+    "dimensions": 37,
+    "l2_norm": 3.795318,
+    "source_files": [
+      "actress.txt",
+      "bookmarks.html"
+    ],
+    "apis_used": [
+      "ThePornDB",
+      "Eporner v2"
+    ]
+  },
+  "dimension_groups": {
+    "content_tags": {
+      "interracial": 0.3333,
+      "natural_boobs": 0.25,
+      "teen": 0.3333,
+      "blonde": 0.1667,
+      "brunette": 0.0833,
+      "massage": 0.1667,
+      "stepfamily": 0.5833,
+      "casting": 0.3333,
+      "solo_amateur": 0.1667,
+      "roleplay": 0.1667,
+      "hardcore": 0.25,
+      "high_quality": 1.0,
+      "softcore_art": 0.1667,
+      "cumshot": 0.1667,
+      "oral": 0.0,
+      "pov": 0.0
+    },
+    "format_preferences": {
+      "prefers_4k_hd": 0.94,
+      "prefers_full_length": 0.85,
+      "prefers_free_tube": 0.8,
+      "prefers_premium_dl": 0.4
+    },
+    "style_preferences": {
+      "personality_driven": 1.0,
+      "natural_appearance": 0.88,
+      "amateur_vibe": 0.65,
+      "professional_prod": 0.7,
+      "softcore_art": 0.35
+    },
+    "beauty_dimensions": {
+      "natural_boobs_confirmed": 1.0,
+      "dark_warm_hair_preference": 0.82,
+      "petite_slim_frame": 0.79,
+      "new_era_performer": 0.75,
+      "rarity_preference": 0.88,
+      "curated_over_viral": 0.76
+    },
+    "performer_affinities": {
+      "affinity_elektra_rose": 0.98,
+      "affinity_danni_rivers": 0.6986,
+      "affinity_devon_green": 0.6804,
+      "affinity_carrie_sage": 0.6396,
+      "affinity_jill_taylor": 0.5988,
+      "affinity_light_fairy": 0.5716
+    }
+  },
+  "full_vector": {
+    "dimension_names": [
+      "tag_interracial",
+      "tag_natural_boobs",
+      "tag_teen",
+      "tag_blonde",
+      "tag_brunette",
+      "tag_massage",
+      "tag_stepfamily",
+      "tag_casting",
+      "tag_solo_amateur",
+      "tag_roleplay",
+      "tag_hardcore",
+      "tag_high_quality",
+      "tag_softcore_art",
+      "tag_cumshot",
+      "tag_oral",
+      "tag_pov",
+      "prefers_4k_hd",
+      "prefers_full_length",
+      "prefers_free_tube",
+      "prefers_premium_dl",
+      "personality_driven",
+      "natural_appearance",
+      "amateur_vibe",
+      "professional_prod",
+      "softcore_art",
+      "natural_boobs_confirmed",
+      "dark_warm_hair_preference",
+      "petite_slim_frame",
+      "new_era_performer",
+      "rarity_preference",
+      "curated_over_viral",
+      "affinity_elektra_rose",
+      "affinity_danni_rivers",
+      "affinity_devon_green",
+      "affinity_carrie_sage",
+      "affinity_jill_taylor",
+      "affinity_light_fairy"
+    ],
+    "raw_values": [
+      0.3333,
+      0.25,
+      0.3333,
+      0.1667,
+      0.0833,
+      0.1667,
+      0.5833,
+      0.3333,
+      0.1667,
+      0.1667,
+      0.25,
+      1.0,
+      0.1667,
+      0.1667,
+      0.0,
+      0.0,
+      0.94,
+      0.85,
+      0.8,
+      0.4,
+      1.0,
+      0.88,
+      0.65,
+      0.7,
+      0.35,
+      1.0,
+      0.82,
+      0.79,
+      0.75,
+      0.88,
+      0.76,
+      0.98,
+      0.6986,
+      0.6804,
+      0.6396,
+      0.5988,
+      0.5716
+    ],
+    "unit_vector": [
+      0.08781872412124145,
+      0.0658706301539465,
+      0.08781872412124145,
+      0.04392253618665151,
+      0.021948093967294968,
+      0.04392253618665151,
+      0.15368935427518796,
+      0.08781872412124145,
+      0.04392253618665151,
+      0.04392253618665151,
+      0.0658706301539465,
+      0.263482520615786,
+      0.04392253618665151,
+      0.04392253618665151,
+      0.0,
+      0.0,
+      0.24767356937883878,
+      0.22396014252341806,
+      0.21078601649262876,
+      0.10539300824631438,
+      0.263482520615786,
+      0.23186461814189163,
+      0.17126363840026088,
+      0.18443776443105014,
+      0.09221888221552507,
+      0.263482520615786,
+      0.21605566690494446,
+      0.20815119128647092,
+      0.19761189046183947,
+      0.23186461814189163,
+      0.20024671566799732,
+      0.2582128702034702,
+      0.18406888890218806,
+      0.17927350702698075,
+      0.16852342018585667,
+      0.15777333334473262,
+      0.15060660878398324
+    ]
+  },
+  "ranked_dimensions": [
+    {
+      "rank": 1,
+      "dimension": "tag_high_quality",
+      "raw": 1.0,
+      "unit": 0.2635
+    },
+    {
+      "rank": 2,
+      "dimension": "personality_driven",
+      "raw": 1.0,
+      "unit": 0.2635
+    },
+    {
+      "rank": 3,
+      "dimension": "natural_boobs_confirmed",
+      "raw": 1.0,
+      "unit": 0.2635
+    },
+    {
+      "rank": 4,
+      "dimension": "affinity_elektra_rose",
+      "raw": 0.98,
+      "unit": 0.2582
+    },
+    {
+      "rank": 5,
+      "dimension": "prefers_4k_hd",
+      "raw": 0.94,
+      "unit": 0.2477
+    },
+    {
+      "rank": 6,
+      "dimension": "natural_appearance",
+      "raw": 0.88,
+      "unit": 0.2319
+    },
+    {
+      "rank": 7,
+      "dimension": "rarity_preference",
+      "raw": 0.88,
+      "unit": 0.2319
+    },
+    {
+      "rank": 8,
+      "dimension": "prefers_full_length",
+      "raw": 0.85,
+      "unit": 0.224
+    },
+    {
+      "rank": 9,
+      "dimension": "dark_warm_hair_preference",
+      "raw": 0.82,
+      "unit": 0.2161
+    },
+    {
+      "rank": 10,
+      "dimension": "prefers_free_tube",
+      "raw": 0.8,
+      "unit": 0.2108
+    },
+    {
+      "rank": 11,
+      "dimension": "petite_slim_frame",
+      "raw": 0.79,
+      "unit": 0.2082
+    },
+    {
+      "rank": 12,
+      "dimension": "curated_over_viral",
+      "raw": 0.76,
+      "unit": 0.2002
+    },
+    {
+      "rank": 13,
+      "dimension": "new_era_performer",
+      "raw": 0.75,
+      "unit": 0.1976
+    },
+    {
+      "rank": 14,
+      "dimension": "professional_prod",
+      "raw": 0.7,
+      "unit": 0.1844
+    },
+    {
+      "rank": 15,
+      "dimension": "affinity_danni_rivers",
+      "raw": 0.6986,
+      "unit": 0.1841
+    },
+    {
+      "rank": 16,
+      "dimension": "affinity_devon_green",
+      "raw": 0.6804,
+      "unit": 0.1793
+    },
+    {
+      "rank": 17,
+      "dimension": "amateur_vibe",
+      "raw": 0.65,
+      "unit": 0.1713
+    },
+    {
+      "rank": 18,
+      "dimension": "affinity_carrie_sage",
+      "raw": 0.6396,
+      "unit": 0.1685
+    },
+    {
+      "rank": 19,
+      "dimension": "affinity_jill_taylor",
+      "raw": 0.5988,
+      "unit": 0.1578
+    },
+    {
+      "rank": 20,
+      "dimension": "tag_stepfamily",
+      "raw": 0.5833,
+      "unit": 0.1537
+    },
+    {
+      "rank": 21,
+      "dimension": "affinity_light_fairy",
+      "raw": 0.5716,
+      "unit": 0.1506
+    },
+    {
+      "rank": 22,
+      "dimension": "prefers_premium_dl",
+      "raw": 0.4,
+      "unit": 0.1054
+    },
+    {
+      "rank": 23,
+      "dimension": "softcore_art",
+      "raw": 0.35,
+      "unit": 0.0922
+    },
+    {
+      "rank": 24,
+      "dimension": "tag_interracial",
+      "raw": 0.3333,
+      "unit": 0.0878
+    },
+    {
+      "rank": 25,
+      "dimension": "tag_teen",
+      "raw": 0.3333,
+      "unit": 0.0878
+    },
+    {
+      "rank": 26,
+      "dimension": "tag_casting",
+      "raw": 0.3333,
+      "unit": 0.0878
+    },
+    {
+      "rank": 27,
+      "dimension": "tag_natural_boobs",
+      "raw": 0.25,
+      "unit": 0.0659
+    },
+    {
+      "rank": 28,
+      "dimension": "tag_hardcore",
+      "raw": 0.25,
+      "unit": 0.0659
+    },
+    {
+      "rank": 29,
+      "dimension": "tag_blonde",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 30,
+      "dimension": "tag_massage",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 31,
+      "dimension": "tag_solo_amateur",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 32,
+      "dimension": "tag_roleplay",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 33,
+      "dimension": "tag_softcore_art",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 34,
+      "dimension": "tag_cumshot",
+      "raw": 0.1667,
+      "unit": 0.0439
+    },
+    {
+      "rank": 35,
+      "dimension": "tag_brunette",
+      "raw": 0.0833,
+      "unit": 0.0219
+    },
+    {
+      "rank": 36,
+      "dimension": "tag_oral",
+      "raw": 0.0,
+      "unit": 0.0
+    },
+    {
+      "rank": 37,
+      "dimension": "tag_pov",
+      "raw": 0.0,
+      "unit": 0.0
+    }
+  ],
+  "tag_cooccurrence_matrix": [
+    {
+      "pair": [
+        "Blowjob",
+        "big dick"
+      ],
+      "count": 26
+    },
+    {
+      "pair": [
+        "big dick",
+        "blowjob"
+      ],
+      "count": 25
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "blowjob"
+      ],
+      "count": 23
+    },
+    {
+      "pair": [
+        "big dick",
+        "hardcore"
+      ],
+      "count": 22
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "cumshot"
+      ],
+      "count": 21
+    },
+    {
+      "pair": [
+        "blowjob",
+        "hardcore"
+      ],
+      "count": 21
+    },
+    {
+      "pair": [
+        "blowjob",
+        "cumshot"
+      ],
+      "count": 21
+    },
+    {
+      "pair": [
+        "big dick",
+        "cumshot"
+      ],
+      "count": 21
+    },
+    {
+      "pair": [
+        "big dick",
+        "teens"
+      ],
+      "count": 21
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "hardcore"
+      ],
+      "count": 20
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "teens"
+      ],
+      "count": 20
+    },
+    {
+      "pair": [
+        "blowjob",
+        "teens"
+      ],
+      "count": 20
+    },
+    {
+      "pair": [
+        "cumshot",
+        "teens"
+      ],
+      "count": 20
+    },
+    {
+      "pair": [
+        "amateur",
+        "big dick"
+      ],
+      "count": 19
+    },
+    {
+      "pair": [
+        "big dick",
+        "pornstar"
+      ],
+      "count": 19
+    },
+    {
+      "pair": [
+        "big ass",
+        "big dick"
+      ],
+      "count": 19
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "amateur"
+      ],
+      "count": 18
+    },
+    {
+      "pair": [
+        "big dick",
+        "brunette"
+      ],
+      "count": 18
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "big ass"
+      ],
+      "count": 18
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "brunette"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "blowjob",
+        "brunette"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "brunette",
+        "cumshot"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "brunette",
+        "teens"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "blowjob",
+        "small tits"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "Brown Hair",
+        "big dick"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "cumshot",
+        "hardcore"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "hardcore",
+        "teens"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "big dick",
+        "small tits"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "Blowjob",
+        "pornstar"
+      ],
+      "count": 17
+    },
+    {
+      "pair": [
+        "blowjob",
+        "pornstar"
+      ],
+      "count": 17
+    }
+  ],
+  "bookmark_tag_raw_scores": {
+    "interracial": 4,
+    "natural_boobs": 3,
+    "teen": 4,
+    "blonde": 2,
+    "brunette": 1,
+    "massage": 2,
+    "stepfamily": 7,
+    "casting": 4,
+    "solo_amateur": 2,
+    "roleplay": 2,
+    "hardcore": 3,
+    "high_quality": 12,
+    "softcore_art": 2,
+    "cumshot": 2,
+    "oral": 0,
+    "pov": 0
+  },
+  "embedding_query_string": "Young natural brunette/auburn performer. Western style. Natural boobs. Categories: teen, casting, stepfamily, hardcore, interracial. Personality-driven. High quality 4K full-length. Professional studios. Affinity: Elektra Rose, Devon Green, Danni Rivers."
+}
